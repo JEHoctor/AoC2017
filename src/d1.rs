@@ -19,9 +19,23 @@ fn main() {
         Ok(file) => file,
     };
 
-    let mut s = String::new();
-    match file.read_to_string(&mut s) {
+    let mut input = String::new();
+    match file.read_to_string(&mut input) {
         Err(why) => panic!("couldn't read {}: {}", display, why),
-        Ok(_) => print!("{} contains:\n{}", display, s),
+        Ok(_) => (),
     }
+
+    // remove the new line at the end of the input
+    input.pop();
+
+    // compute the sum as described in the problem statement
+    let mut acc = 0;
+    let mut prev_char = input.chars().last().unwrap();
+    for c in input.chars() {
+        if c == prev_char {
+            acc += c.to_digit(10).unwrap();
+        }
+        prev_char = c;
+    }
+    println!("{}", acc);
 }
