@@ -37,5 +37,21 @@ fn main() {
         }
         prev_char = c;
     }
-    println!("{}", acc);
+    println!("part 1: {}", acc);
+
+    // solution to part 2
+    let mut acc2 = 0;
+    let half_input_len = input.len() / 2;
+    let first_half = &input[..half_input_len];
+    let second_half = &input[half_input_len..];
+    for (c1, c2) in first_half.chars().zip(second_half.chars()) {
+        if c1 == c2 {
+            acc2 += c1.to_digit(10).unwrap();
+        }
+    }
+
+    // We need to double acc2 because the sum as specified should have been
+    // over the full list.
+    acc2 *= 2;
+    println!("part 2: {}", acc2);
 }
