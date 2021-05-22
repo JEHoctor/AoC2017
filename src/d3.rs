@@ -3,6 +3,31 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
+fn steps(square: i32) -> i32 {
+    // What ring are we on?
+    // Ring Numbering:
+    //
+    //   9 9 9 9 9 9 9 9 9
+    //   9 7 7 7 7 7 7 7 9
+    //   9 7 5 5 5 5 5 7 9
+    //   9 7 5 3 3 3 5 7 9
+    //   9 7 5 3 1 3 5 7 9
+    //   9 7 5 3 3 3 5 7 9
+    //   9 7 5 5 5 5 5 7 9
+    //   9 7 7 7 7 7 7 7 9
+    //   9 9 9 9 9 9 9 9 9
+
+    let mut ring = 1;
+    while ring * ring < square {
+        ring += 2;
+    }
+
+    let mut steps = ring / 2;
+    let ringm2 = ring - 2;
+    steps += ((square - ringm2 * ringm2 - 1) % (ring - 1) - (ring / 2 - 1)).abs();
+    return steps;
+}
+
 fn main() {
     // get the path to the input from the command line
     let args: Vec<String> = env::args().collect();
@@ -25,7 +50,10 @@ fn main() {
         Ok(_) => (),
     }
 
-    // println!("part 1: {}", );
+    input.pop(); // drop the trailing newline
+    let square: i32 = input.parse().unwrap();
+
+    println!("part 1: {}", steps(square));
 
     // println!("part 2: {}", );
 }
