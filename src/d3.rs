@@ -4,6 +4,16 @@ use std::io::prelude::*;
 use std::path::Path;
 
 fn steps(square: i32) -> i32 {
+    // only defined for square >= 1
+    if square < 1 {
+        panic!("steps() called with square < 1");
+    }
+
+    // special case to avoid remainder mod 0
+    if square == 1 {
+        return 0;
+    }
+
     // What ring are we on?
     // Ring Numbering:
     //
