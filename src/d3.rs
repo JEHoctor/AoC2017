@@ -44,7 +44,7 @@ fn part_one(square: i32) -> i32 {
 #[derive(Copy, Clone)]
 struct Vector2 {
     x: i32,
-    y: i32
+    y: i32,
 }
 
 impl Add for Vector2 {
@@ -77,7 +77,7 @@ fn spiral_direction(loc: &Vector2) -> Vector2 {
 }
 
 struct Grid {
-    grid: Vec<Vec<i32>>
+    grid: Vec<Vec<i32>>,
 }
 
 impl Grid {
