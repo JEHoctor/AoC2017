@@ -1,9 +1,11 @@
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
+use std::ops::{Add, AddAssign};
 use std::path::Path;
 
-fn steps(square: i32) -> i32 {
+// for part 1
+fn part_one(square: i32) -> i32 {
     // only defined for square >= 1
     if square < 1 {
         panic!("steps() called with square < 1");
@@ -38,6 +40,109 @@ fn steps(square: i32) -> i32 {
     return steps;
 }
 
+// for part 2
+#[derive(Copy, Clone)]
+struct Vector2 {
+    x: i32,
+    y: i32
+}
+
+impl Add for Vector2 {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl AddAssign for Vector2 {
+    fn add_assign(&mut self, other: Self) {
+        *self = *self + other;
+    }
+}
+
+fn spiral_direction(loc: &Vector2) -> Vector2 {
+    if loc.y <= -loc.x.abs() {
+        Vector2 { x: 1, y: 0 }
+    } else if loc.x <= -loc.y.abs() {
+        Vector2 { x: 0, y: -1 }
+    } else if loc.y >= loc.x.abs() {
+        Vector2 { x: -1, y: 0 }
+    } else {
+        Vector2 { x: 0, y: 1 }
+    }
+}
+
+struct Grid {
+    grid: Vec<Vec<i32>>
+}
+
+impl Grid {
+    fn empty() -> Self {
+        Self { grid: Vec::new() }
+    }
+
+    fn internal_idx(external_idx: i32) -> usize {
+        if external_idx >= 0 {
+            2 * (external_idx as usize)
+        } else {
+            (-2 * external_idx) as usize - 1
+        }
+    }
+
+    fn write(&mut self, loc: &Vector2, val: i32) {
+        let ix = Grid::internal_idx(loc.x);
+        let iy = Grid::internal_idx(loc.y);
+        while ix + 1 > self.grid.len() {
+            self.grid.push(Vec::new());
+        }
+        while iy + 1 > self.grid[ix].len() {
+            self.grid[ix].push(0);
+        }
+        self.grid[ix][iy] = val;
+    }
+
+    fn read(&self, loc: &Vector2) -> i32 {
+        let ix = Grid::internal_idx(loc.x);
+        let iy = Grid::internal_idx(loc.y);
+        if ix + 1 > self.grid.len() {
+            0
+        } else if iy + 1 > self.grid[ix].len() {
+            0
+        } else {
+            self.grid[ix][iy]
+        }
+    }
+
+    fn sum_neighbors(&self, loc: &Vector2) -> i32 {
+        let mut acc = 0;
+        for dx in -1..=1 {
+            for dy in -1..=1 {
+                if (dx != 0) | (dy != 0) {
+                    acc += self.read(&(*loc + Vector2 { x: dx, y: dy }));
+                }
+            }
+        }
+        return acc;
+    }
+}
+
+fn part_two(threshold: i32) -> i32 {
+    let mut loc = Vector2 { x: 0, y: 0 };
+    let mut value = 1;
+    let mut grid = Grid::empty();
+    grid.write(&loc, value);
+    while value <= threshold {
+        loc += spiral_direction(&loc);
+        value = grid.sum_neighbors(&loc);
+        grid.write(&loc, value);
+    }
+    return value;
+}
+
 fn main() {
     // get the path to the input from the command line
     let args: Vec<String> = env::args().collect();
@@ -61,9 +166,9 @@ fn main() {
     }
 
     input.pop(); // drop the trailing newline
-    let square: i32 = input.parse().unwrap();
+    let input_num: i32 = input.parse().unwrap();
 
-    println!("part 1: {}", steps(square));
+    println!("part 1: {}", part_one(input_num));
 
-    // println!("part 2: {}", );
+    println!("part 2: {}", part_two(input_num));
 }
