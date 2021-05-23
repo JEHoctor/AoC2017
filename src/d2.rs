@@ -7,7 +7,7 @@ fn p2_row(nums: &mut Vec<i32>) -> i32 {
     nums.sort();
 
     for (i, n1) in nums.iter().enumerate() {
-        for n2 in nums[i+1..].iter() {
+        for n2 in nums[i + 1..].iter() {
             if n2 % n1 == 0 {
                 return n2 / n1;
             }
@@ -16,7 +16,6 @@ fn p2_row(nums: &mut Vec<i32>) -> i32 {
 
     panic!("did not find a pair of numbers such that one divides the other");
 }
-
 
 fn main() {
     // get the path to the input from the command line
@@ -79,13 +78,13 @@ fn main() {
                     acc2 += p2_row(&mut nums);
                     row_init = false;
                 }
-            },
+            }
             _ => {
                 if !in_word {
                     in_word = true;
                     word_start = i;
                 }
-            },
+            }
         }
     }
 
