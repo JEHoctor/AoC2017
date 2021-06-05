@@ -1,7 +1,20 @@
+use std::collections::HashSet;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+
+// for part 1
+fn is_valid(passphrase: &str) -> bool {
+    let mut words = HashSet::new();
+    for word in passphrase.split(' ') {
+        if words.contains(word) {
+            return false;
+        }
+        words.insert(word);
+    }
+    true
+}
 
 fn main() {
     // get the path to the input from the command line
@@ -25,7 +38,17 @@ fn main() {
         Ok(_) => (),
     }
 
-    // println!("part 1: {}", );
+    // remove trailing new line from input
+    input.pop();
+
+    // count valid passphrases and print
+    let mut n_valid = 0;
+    for passphrase in input.split('\n') {
+        if is_valid(passphrase) {
+            n_valid += 1;
+        }
+    }
+    println!("part 1: {}", n_valid);
 
     // println!("part 2: {}", );
 }
