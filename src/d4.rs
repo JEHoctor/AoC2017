@@ -34,7 +34,6 @@ fn is_valid2(passphrase: &str) -> bool {
     true
 }
 
-
 fn main() {
     // get the path to the input from the command line
     let args: Vec<String> = env::args().collect();
