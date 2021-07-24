@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
@@ -10,13 +11,13 @@ struct JumpState {
 }
 
 impl JumpState {
-    fn from_offsets(other_offsets: &[i32]) -> &mut JumpState {
-        let mut offsets = other_offsets.to_vec();
+    fn from_offsets(other_offsets: &[i32]) -> JumpState {
+        let offsets = other_offsets.to_vec();
         JumpState { offsets: offsets, position: 0, time: 0}
     }
 
     fn still_in_maze(&self) -> bool {
-        0 <= self.position < self.offsets.len()
+        (0 <= self.position) & (self.position < self.offsets.len().try_into().unwrap())
     }
 
     fn step(&mut self) {
@@ -24,24 +25,29 @@ impl JumpState {
             panic!("Can't step when already outside maze!")
         }
 
-        let offset = self.offsets[self.position];
-        self.offsets[self.position] = offset + 1;
+        let pos_as_usize: usize = self.position.try_into().unwrap();
+        let offset = self.offsets[pos_as_usize];
+        self.offsets[pos_as_usize] = offset + 1;
         self.position += offset;
         self.time += 1;
     }
 }
 
-fn parse_offsets(&str input) -> &mut Vec<i32> {
-    let mut ret = Vec<i32>::new();
+fn parse_offsets(input: &str) -> Vec<i32> {
+    let mut ret = Vec::<i32>::new();
     for chunk in input[..input.len()-1].split('\n') {
-        ret. chunk.parse().unwrap();
+        ret.push(chunk.parse().unwrap());
     }
-    return ret;
+    ret
 }
 
 // for part 1
-fn (mut jumps: &mut Vec<i32>) -> i32{
-
+fn count_steps(offsets: &[i32]) -> i32{
+    let mut jstate = JumpState::from_offsets(offsets);
+    while jstate.still_in_maze() {
+        jstate.step();
+    }
+    jstate.time
 }
 
 fn main() {
@@ -66,7 +72,9 @@ fn main() {
         Ok(_) => (),
     }
 
-    // println!("part 1: {}", );
+    let offsets = parse_offsets(&input);
+
+    println!("part 1: {}", count_steps(&offsets));
 
     // println!("part 2: {}", );
 }
