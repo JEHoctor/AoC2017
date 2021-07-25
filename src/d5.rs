@@ -8,15 +8,17 @@ struct JumpState {
     offsets: Vec<i32>,
     position: i32,
     time: i32,
+    type2: bool,
 }
 
 impl JumpState {
-    fn from_offsets(other_offsets: &[i32]) -> JumpState {
+    fn from_offsets(other_offsets: &[i32], type2: bool) -> JumpState {
         let offsets = other_offsets.to_vec();
         JumpState {
             offsets: offsets,
             position: 0,
             time: 0,
+            type2: type2,
         }
     }
 
@@ -31,7 +33,11 @@ impl JumpState {
 
         let pos_as_usize: usize = self.position.try_into().unwrap();
         let offset = self.offsets[pos_as_usize];
-        self.offsets[pos_as_usize] = offset + 1;
+        if self.type2 & (offset >= 3) {
+            self.offsets[pos_as_usize] = offset - 1;
+        } else {
+            self.offsets[pos_as_usize] = offset + 1;
+        }
         self.position += offset;
         self.time += 1;
     }
@@ -45,9 +51,9 @@ fn parse_offsets(input: &str) -> Vec<i32> {
     ret
 }
 
-// for part 1
-fn count_steps(offsets: &[i32]) -> i32 {
-    let mut jstate = JumpState::from_offsets(offsets);
+// for part 1 and part 2
+fn count_steps(offsets: &[i32], type2: bool) -> i32 {
+    let mut jstate = JumpState::from_offsets(offsets, type2);
     while jstate.still_in_maze() {
         jstate.step();
     }
@@ -78,7 +84,7 @@ fn main() {
 
     let offsets = parse_offsets(&input);
 
-    println!("part 1: {}", count_steps(&offsets));
+    println!("part 1: {}", count_steps(&offsets, false));
 
-    // println!("part 2: {}", );
+    println!("part 2: {}", count_steps(&offsets, true));
 }
